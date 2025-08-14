@@ -13,14 +13,15 @@
     "mqtt_username": "sml2mqtt",
     "mqtt_password": "sml2mqttPassword",
     "update_interval": 300,
-    "secrets": {}
+    "secrets": "{}"
   },
   "schema": {
     "mqtt_broker": "str",
     "mqtt_port": "int",
     "mqtt_username": "str?",
     "mqtt_password": "password?",
-    "update_interval": "int"
+    "update_interval": "int",
+    "secrets": "str"
   },
   "services": ["mqtt:need"]
 }
