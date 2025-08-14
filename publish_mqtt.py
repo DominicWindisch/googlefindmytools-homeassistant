@@ -90,6 +90,7 @@ def publish_device_state(
     # Extract location data
     lat = location_data.get("latitude")
     lon = location_data.get("longitude")
+    semantic_location = location_data.get("semantic_location")
     accuracy = location_data.get("accuracy")
     altitude = location_data.get("altitude")
     timestamp = location_data.get("timestamp")
@@ -121,6 +122,7 @@ def publish_device_state(
         "latitude": lat,
         "longitude": lon,
         "altitude": altitude,
+        "semantic_location": semantic_location,
         "gps_accuracy": accuracy,
         "source_type": "gps",
         "last_updated": last_updated_iso,
@@ -177,7 +179,10 @@ def main():
 
                         # Get and publish location data
                         location_data = get_location_data_for_device(fcm_receiver, canonic_id, device_name)
-                        if not location_data or not all(k in location_data for k in ['latitude', 'longitude']):
+                        if not location_data:
+                            logger.warning(f"Location data missing for '{device_name}'. Skipping.")
+                            continue
+                        if not all(k in location_data for k in ['latitude', 'longitude']) and not all(k in location_data for k in ['semantic_location']):
                             logger.warning(f"Incomplete or missing location data for '{device_name}'. Skipping this entry: {location_data}")
                             continue
 
