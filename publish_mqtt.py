@@ -114,24 +114,40 @@ def publish_device_state(
         last_updated_iso = datetime.now(timezone.utc).isoformat()
 
     # Publish state (home/not_home/unknown)
-    state = "unknown" if semantic_location == None else semantic_location.lower()
-    client.publish(f"{base_topic}/state", state)
+    if (semantic_location == None):
+        state = "unknown"
+        client.publish(f"{base_topic}/state", state)
 
-    # Publish attributes
-    attributes = {
-        "latitude": lat,
-        "longitude": lon,
-        "altitude": altitude,
-        "semantic_location": semantic_location,
-        "gps_accuracy": accuracy,
-        "source_type": "gps",
-        "last_updated": last_updated_iso,
-    }
-    logger.info(
-        f"Publishing location for '{device_name}' (ID: {canonic_id}): "
-        f"lat={lat}, lon={lon}, accuracy={accuracy}"
-    )
-    r = client.publish(f"{base_topic}/attributes", json.dumps(attributes))
+        # Publish attributes
+        attributes = {
+            "latitude": lat,
+            "longitude": lon,
+            "altitude": altitude,
+            "gps_accuracy": accuracy,
+            "source_type": "gps",
+            "last_updated": last_updated_iso,
+        }
+        logger.info(
+            f"Publishing location for '{device_name}' (ID: {canonic_id}): "
+            f"lat={lat}, lon={lon}, accuracy={accuracy}"
+        )
+        r = client.publish(f"{base_topic}/attributes", json.dumps(attributes))
+    else:
+        state = semantic_location.lower()
+        client.publish(f"{base_topic}/state", state)
+
+        # Publish attributes
+        attributes = {
+            "location_name": semantic_location,
+            "source_type": "gps",
+            "last_updated": last_updated_iso,
+        }
+        logger.info(
+            f"Publishing location for '{device_name}' (ID: {canonic_id}): "
+            f"location_name={semantic_location}"
+        )
+        r = client.publish(f"{base_topic}/attributes", json.dumps(attributes))
+    
     return r
 
 
