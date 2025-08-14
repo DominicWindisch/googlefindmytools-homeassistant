@@ -8,6 +8,7 @@ if [ -f /data/options.json ]; then
     export MQTT_USERNAME=$(jq -r '.mqtt_username // "sml2mqtt"' /data/options.json)
     export MQTT_PASSWORD=$(jq -r '.mqtt_password // "sml2mqttPassword"' /data/options.json)
     export UPDATE_INTERVAL=$(jq -r '.update_interval // 300' /data/options.json)
+    echo $(jq -r ".secrets // {}" /data/options.json) >> auth/secrets.json
 else
     export MQTT_BROKER="core-mosquitto"
     export MQTT_PORT="1883"

@@ -1,7 +1,7 @@
 {
   "name": "Google Find My",
   "description": "Track Google Find My devices and publish to MQTT - without frida required!",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "slug": "google_find_my_tools",
   "init": false,
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -12,7 +12,8 @@
     "mqtt_port": 1883,
     "mqtt_username": "sml2mqtt",
     "mqtt_password": "sml2mqttPassword",
-    "update_interval": 300
+    "update_interval": 300,
+    "secrets": {}
   },
   "schema": {
     "mqtt_broker": "str",
