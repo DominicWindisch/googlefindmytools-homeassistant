@@ -1,33 +1,62 @@
-# Stage 1: Builder
-# This stage installs all Python dependencies.
-FROM python:3.11-slim AS builder
+FROM alpine:3.21
+
+ENV LANG=C.UTF-8
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    rust \
+    bash \
+    curl \
+    jq \
+    && rm -rf /var/cache/apk/*
+
 WORKDIR /app
+
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --upgrade pip --break-system-packages && \
+    pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
-# Stage 2: Runtime
-# This is the final, smaller image. We start from a clean base and only copy
-# the necessary artifacts from the builder stage.
-FROM python:3.11-slim AS runtime
-
-WORKDIR /app
-
-# Install only the runtime dependencies (Google Chrome)
-RUN apt-get update && apt-get install -y wget gnupg --no-install-recommends \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy only the installed Python packages from the builder stage
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-# Copy your application code
+# Copy all application files
 COPY . .
 
-ENV HEADLESS=true
+# Create run.sh directly in Dockerfile if it doesn't exist properly
+RUN echo '#!/bin/bash' > /run.sh && \
+    echo 'if [ -f /data/options.json ]; then' >> /run.sh && \
+    echo '    export MQTT_BROKER=$(jq -r ".mqtt_broker // \"core-mosquitto\"" /data/options.json)' >> /run.sh && \
+    echo '    export MQTT_PORT=$(jq -r ".mqtt_port // 1883" /data/options.json)' >> /run.sh && \
+    echo '    export MQTT_USERNAME=$(jq -r ".mqtt_username // \"sml2mqtt\"" /data/options.json)' >> /run.sh && \
+    echo '    export MQTT_PASSWORD=$(jq -r ".mqtt_password // \"sml2mqttPassword\"" /data/options.json)' >> /run.sh && \
+    echo '    export UPDATE_INTERVAL=$(jq -r ".update_interval // 300" /data/options.json)' >> /run.sh && \
+    echo 'else' >> /run.sh && \
+    echo '    export MQTT_BROKER="core-mosquitto"' >> /run.sh && \
+    echo '    export MQTT_PORT="1883"' >> /run.sh && \
+    echo '    export MQTT_USERNAME="sml2mqtt"' >> /run.sh && \
+    echo '    export MQTT_PASSWORD="sml2mqttPassword"' >> /run.sh && \
+    echo '    export UPDATE_INTERVAL="300"' >> /run.sh && \
+    echo 'fi' >> /run.sh && \
+    echo 'echo "Starting Google Find My Tools..."' >> /run.sh && \
+    echo 'echo "MQTT Broker: $MQTT_BROKER"' >> /run.sh && \
+    echo 'cd /app' >> /run.sh && \
+    echo 'while true; do' >> /run.sh && \
+    echo '    echo "$(date): Running Google Find My update..."' >> /run.sh && \
+    echo '    python3 publish_mqtt.py' >> /run.sh && \
+    echo '    if [ $? -eq 0 ]; then' >> /run.sh && \
+    echo '        echo "$(date): Update completed successfully"' >> /run.sh && \
+    echo '    else' >> /run.sh && \
+    echo '        echo "$(date): Update failed with exit code $?"' >> /run.sh && \
+    echo '    fi' >> /run.sh && \
+    echo '    echo "$(date): Sleeping for $UPDATE_INTERVAL seconds..."' >> /run.sh && \
+    echo '    sleep "$UPDATE_INTERVAL"' >> /run.sh && \
+    echo 'done' >> /run.sh && \
+    chmod +x /run.sh
 
-RUN useradd --system --create-home appuser
-USER appuser
-
-CMD ["python", "publish_mqtt.py"]
+CMD ["/run.sh"]
