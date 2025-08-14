@@ -1,7 +1,7 @@
 {
   "name": "Google Find My",
   "description": "Track Google Find My devices and publish to MQTT - without frida required!",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "slug": "google_find_my_tools",
   "init": false,
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],

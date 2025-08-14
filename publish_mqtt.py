@@ -114,7 +114,7 @@ def publish_device_state(
         last_updated_iso = datetime.now(timezone.utc).isoformat()
 
     # Publish state (home/not_home/unknown)
-    state = "unknown"
+    state = "unknown" if semantic_location == None else semantic_location.lower()
     client.publish(f"{base_topic}/state", state)
 
     # Publish attributes
