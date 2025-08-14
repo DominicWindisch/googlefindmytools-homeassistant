@@ -178,7 +178,7 @@ def main():
                         # Get and publish location data
                         location_data = get_location_data_for_device(fcm_receiver, canonic_id, device_name)
                         if not location_data or not all(k in location_data for k in ['latitude', 'longitude']):
-                            logger.warning(f"Incomplete or missing location data for '{device_name}'. Skipping.")
+                            logger.warning(f"Incomplete or missing location data for '{device_name}'. Skipping this entry: {location_data}")
                             continue
 
                         msg_info = publish_device_state(client, device_name, canonic_id, location_data)
