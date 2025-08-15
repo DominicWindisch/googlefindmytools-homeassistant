@@ -582,7 +582,7 @@ class FcmPushClient:  # pylint:disable=too-many-instance-attributes
 
     def _try_increment_error_count(self, error_type: ErrorType) -> bool:
         if error_type == ErrorType.CONNECTION:
-            return true # Connection may fail every now and then, no need to shutdown
+            return True # Connection may fail every now and then, no need to shutdown
         if error_type not in self.sequential_error_counters:
             self.sequential_error_counters[error_type] = 0
 
