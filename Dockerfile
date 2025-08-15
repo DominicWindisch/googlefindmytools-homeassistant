@@ -17,7 +17,6 @@ RUN apk add --no-cache \
     bash \
     curl \
     jq \
-    tzdata \
     && rm -rf /var/cache/apk/*
 
 WORKDIR /app

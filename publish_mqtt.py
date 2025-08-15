@@ -3,6 +3,7 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
+import pytz
 from typing import Dict
 
 import paho.mqtt.client as mqtt
@@ -15,14 +16,39 @@ from NovaApi.ExecuteAction.LocateTracker.location_request import (
 from NovaApi.ListDevices.nbe_list_devices import request_device_list
 from ProtoDecoders.decoder import get_canonic_ids, parse_device_list_protobuf
 
+MY_TIMEZONE = pytz.timezone('Europe/Berlin')
+
+class UTCFormatter(logging.Formatter):
+    """
+    A custom formatter that converts UTC timestamps to a specified timezone.
+    """
+    def formatTime(self, record, datefmt=None):
+        # Convert the UTC timestamp to a datetime object in the specified timezone
+        utc_dt = datetime.fromtimestamp(record.created, tz=pytz.utc)
+        local_dt = utc_dt.astimezone(MY_TIMEZONE)
+        
+        # Use the converted datetime object to format the time
+        if datefmt:
+            return local_dt.strftime(datefmt)
+        
+        return local_dt.isoformat()
+
 # --- Logging Setup ---
-logging.Formatter.converter = time.localtime
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
+formatter = UTCFormatter(
+    fmt="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
 )
+
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+
 logger = logging.getLogger("GoogleFindMyTools")
+logger.setLevel(logging.INFO)
+
+if logger.hasHandlers():
+    logger.handlers.clear()
+
+logger.addHandler(handler)
 
 # MQTT Configuration
 try:
