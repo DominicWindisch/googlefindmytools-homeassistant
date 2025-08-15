@@ -8,6 +8,7 @@ if [ -f /data/options.json ]; then
     export MQTT_USERNAME=$(jq -r '.mqtt_username // "sml2mqtt"' /data/options.json)
     export MQTT_PASSWORD=$(jq -r '.mqtt_password // "sml2mqttPassword"' /data/options.json)
     export UPDATE_INTERVAL=$(jq -r '.update_interval // 300' /data/options.json)
+    export TZ=$(jq -r '.timezone // "UTC"' /data/options.json)
     echo $(jq -r ".secrets // {}" /data/options.json) >> auth/secrets.json
 else
     export MQTT_BROKER="core-mosquitto"
@@ -15,6 +16,7 @@ else
     export MQTT_USERNAME="sml2mqtt"
     export MQTT_PASSWORD="sml2mqttPassword"
     export UPDATE_INTERVAL="300"
+    export TZ="UTC"
 fi
 
 echo "Starting Google Find My Tools..."
