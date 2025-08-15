@@ -24,7 +24,7 @@ from ProtoDecoders.decoder import get_canonic_ids, parse_device_list_protobuf
 #logger = logging.getLogger("GoogleFindMyTools")
 
 formatter = logging.Formatter(
-    format="%(asctime)s [%(levelname)s] %(message)s",
+    fmt="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 formatter.converter = time.localtime
