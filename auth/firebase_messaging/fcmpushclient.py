@@ -737,7 +737,7 @@ class FcmPushClient:  # pylint:disable=too-many-instance-attributes
                                 type(osex).__name__,
                             )
                     else:
-                        _logger.exception("Unexpected exception during read\n")
+                        #_logger.exception("Unexpected exception during read\n")
                         if self._try_increment_error_count(ErrorType.CONNECTION):
                             await self._reset()
         except Exception as ex:
