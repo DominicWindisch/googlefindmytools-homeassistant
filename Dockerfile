@@ -36,7 +36,7 @@ RUN echo '#!/bin/bash' > /run.sh && \
     echo '    export MQTT_USERNAME=$(jq -r ".mqtt_username // \"sml2mqtt\"" /data/options.json)' >> /run.sh && \
     echo '    export MQTT_PASSWORD=$(jq -r ".mqtt_password // \"sml2mqttPassword\"" /data/options.json)' >> /run.sh && \
     echo '    export UPDATE_INTERVAL=$(jq -r ".update_interval // 300" /data/options.json)' >> /run.sh && \
-    echo '    export TZ=$(jq -r '.timezone // "UTC"' /data/options.json)' >> /run.sh && \
+    echo '    export TZ=$(jq -r ".timezone // \""UTC"\"" /data/options.json)' >> /run.sh && \
     echo '    echo $(jq -r ".secrets // {}" /data/options.json) >> auth/secrets.json' >> /run.sh && \
     echo 'else' >> /run.sh && \
     echo '    export MQTT_BROKER="core-mosquitto"' >> /run.sh && \
