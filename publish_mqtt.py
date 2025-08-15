@@ -16,31 +16,13 @@ from NovaApi.ListDevices.nbe_list_devices import request_device_list
 from ProtoDecoders.decoder import get_canonic_ids, parse_device_list_protobuf
 
 # --- Logging Setup ---
-#logging.Formatter.converter = time.localtime
-#logging.basicConfig(
-#    level=logging.INFO,
-#    format="%(asctime)s [%(levelname)s] %(message)s",
-#    datefmt="%Y-%m-%d %H:%M:%S",
-#)
-#logger = logging.getLogger("GoogleFindMyTools")
-
-formatter = logging.Formatter(
-    fmt="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+logging.Formatter.converter = time.localtime
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
-
-formatter.converter = time.localtime
-
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-
-
 logger = logging.getLogger("GoogleFindMyTools")
-logger.setLevel(logging.INFO)
-
-if logger.hasHandlers():
-    logger.handlers.clear() # to ensure localtime handler is attached properly
-logger.addHandler(handler)
 
 # MQTT Configuration
 try:
