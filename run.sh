@@ -23,6 +23,7 @@ echo "Starting Google Find My Tools..."
 echo "MQTT Broker: $MQTT_BROKER"
 echo "MQTT Port: $MQTT_PORT"
 echo "Update interval: $UPDATE_INTERVAL seconds"
+echo "Using timezone: $TZ"
 
 cd /app
 

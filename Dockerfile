@@ -36,6 +36,7 @@ RUN echo '#!/bin/bash' > /run.sh && \
     echo '    export MQTT_USERNAME=$(jq -r ".mqtt_username // \"sml2mqtt\"" /data/options.json)' >> /run.sh && \
     echo '    export MQTT_PASSWORD=$(jq -r ".mqtt_password // \"sml2mqttPassword\"" /data/options.json)' >> /run.sh && \
     echo '    export UPDATE_INTERVAL=$(jq -r ".update_interval // 300" /data/options.json)' >> /run.sh && \
+    echo '    export TZ=$(jq -r '.timezone // "UTC"' /data/options.json)' >> /run.sh && \
     echo '    echo $(jq -r ".secrets // {}" /data/options.json) >> auth/secrets.json' >> /run.sh && \
     echo 'else' >> /run.sh && \
     echo '    export MQTT_BROKER="core-mosquitto"' >> /run.sh && \
@@ -43,9 +44,13 @@ RUN echo '#!/bin/bash' > /run.sh && \
     echo '    export MQTT_USERNAME="sml2mqtt"' >> /run.sh && \
     echo '    export MQTT_PASSWORD="sml2mqttPassword"' >> /run.sh && \
     echo '    export UPDATE_INTERVAL="300"' >> /run.sh && \
+    echo '    export TZ="UTC"' >> /run.sh && \
     echo 'fi' >> /run.sh && \
     echo 'echo "Starting Google Find My Tools..."' >> /run.sh && \
     echo 'echo "MQTT Broker: $MQTT_BROKER"' >> /run.sh && \
+    echo 'echo "MQTT Port: $MQTT_PORT"' >> /run.sh && \
+    echo 'echo "Update interval: $UPDATE_INTERVAL seconds"' >> /run.sh && \
+    echo 'echo "Using timezone: $TZ"' >> /run.sh && \
     echo 'cd /app' >> /run.sh && \
     echo 'while true; do' >> /run.sh && \
     echo '    echo "$(date): Running Google Find My update..."' >> /run.sh && \
